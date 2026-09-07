@@ -1,3 +1,7 @@
+## [3.0.0] - 2026-09-07
+- Rebrand to Isyfi Pray, dibuat oleh Isyfi Media Tekno
+- Change package name to com.isyfimediatekno.pray
+
 ## [2.0.0] - 2026-08-17
 - Release v2.0.0 with Major changes
 - Now, all feature almost offline: Calculation, Financial Report, Event Images and many more
