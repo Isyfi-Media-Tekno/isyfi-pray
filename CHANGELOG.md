@@ -1,29 +1,6 @@
+## [3.1.0] - 2026-09-07
+- Smaller size of apps
+ 
 ## [3.0.0] - 2026-09-07
 - Rebrand to Isyfi Pray, dibuat oleh Isyfi Media Tekno
 - Change package name to com.isyfimediatekno.pray
-
-## [2.0.0] - 2026-08-17
-- Release v2.0.0 with Major changes
-- Now, all feature almost offline: Calculation, Financial Report, Event Images and many more
-- using best practice flutter architecture
-
-## [1.3.1] - 2026-04-06
-- Bug Fixing: Always show Jumat in Saturday
-
-## [1.3.0] - 2026-03-25
-- Dynamic Hijri Correction
-
-## [1.2.2] - 2026-03-20
-- Bug Fixed: Hijriyah minus 1
-
-## [1.2.1] - 2026-03-16
-- Bug Fixed: Jumat Screen not show during Friday
-
-## [1.2.0] - 2026-03-10
-- change package name
-
-## [1.1.0] - 2026-03-10
-- add waiting screen before Isyraq (countdown)
-
-## [1.0.0] - 2026-03-06
-- Initial Release.
