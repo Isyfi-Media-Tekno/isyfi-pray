@@ -200,11 +200,11 @@ void main() {
 
       final (root, rootBody) = await get('/');
       expect(root, 200);
-      expect(rootBody, contains('Washol TV'));
+      expect(rootBody, contains('Isyfi Pray'));
 
       final (index, indexBody) = await get('/index.html');
       expect(index, 200);
-      expect(indexBody, contains('Panel Kontrol'));
+      expect(indexBody, contains('Panel Kontrol Masjid'));
 
       final (missing, _) = await get('/does-not-exist.js');
       expect(missing, 404);

@@ -1,5 +1,7 @@
-# PrayTime TV (Jam Sholat Masjid)
+# Isyfi Pray (Jam Sholat Masjid)
 A specialized Flutter application designed for Masjid display screens. This project helps congregations keep track of prayer times, announcements, and live streams from the Holy Mosque.
+
+Dibuat oleh Isyfi Media Tekno.
 
 ## 🚀 Quick Start (Onboarding)
 This project uses FVM (Flutter Version Management) to ensure everyone is on the exact same Flutter version (3.41.1).

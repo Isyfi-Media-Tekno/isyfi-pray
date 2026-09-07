@@ -146,6 +146,14 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
             fontSize: 13,
           ),
         ),
+        const SizedBox(height: 6),
+        Text(
+          "Isyfi Pray — dibuat oleh Isyfi Media Tekno.",
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: 13,
+          ),
+        ),
       ],
     );
   }
