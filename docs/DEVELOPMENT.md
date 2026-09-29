@@ -89,5 +89,5 @@ fvm flutter build appbundle     # Play Store
 
 ## Notes
 
-- The app targets Android only (`com.jamsholattv`); iOS is not configured.
+- The app targets Android only (`com.isyfimediatekno.pray`); iOS is not configured.
 - The Home screen shows a "JAM TV BELUM DIATUR!" overlay when the device clock reports a year < 2025 — this is an intentional guard for misconfigured masjid TVs, not a bug.
