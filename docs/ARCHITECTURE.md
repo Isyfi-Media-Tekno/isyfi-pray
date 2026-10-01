@@ -9,8 +9,9 @@ lib/
 ├── main.dart                         # entrypoint: orientation, fullscreen, intl, wakelock, config load, server start
 ├── app/
 │   ├── masjid_app.dart               # root widget: MultiProvider wiring + MaterialApp + navigator key
-│   ├── main_controller.dart          # watches providers, maps AppStatus → screen (+ debug FAB)
+│   ├── main_controller.dart          # watches providers, maps AppStatus → screen
 │   ├── remote_key_handler.dart       # TV remote: long-press OK / Menu toggles the config menu
+│   ├── shake_to_config.dart          # mobile: shake the device twice to toggle the config menu
 │   └── providers/
 │       ├── config_provider.dart      # AppConfig defaults + persisted overrides (load/applyConfig)
 │       └── app_provider.dart         # THE state machine (1-sec tick) + config-fed financial report + event state
@@ -86,7 +87,7 @@ lib/
 - `isEventMode && eventImages.isNotEmpty` → `EventScreen` (active once at least one image is uploaded via the config server)
 - otherwise → `HomeWrapper`
 
-An `AnimatedSwitcher` cross-fades between screen changes. A tiny red `wifi_off` badge overlays when offline. In debug mode a FAB column (fake-time simulators) floats on top.
+An `AnimatedSwitcher` cross-fades between screen changes. A tiny red `wifi_off` badge overlays when offline. In debug mode the tools page (`ConfigMenuScreen`, opened by remote long-press OK / Menu or by shaking a phone) shows a FAB column with the fake-time simulators.
 
 ## The one-second heartbeat
 

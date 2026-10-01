@@ -4,6 +4,42 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:jam_sholat_tv/domain/models/financial_summary.dart';
 import 'package:jam_sholat_tv/ui/home/financial_report_card.dart';
 
+/// Fixture with five weekly rows, so the layout tests exercise a full ledger
+/// regardless of what the default `offlineSample()` contains.
+FinancialSummary sampleSummary() {
+  return FinancialSummary(
+    totalKasMasjid: 121381630,
+    saldoKasDate: DateTime(2026, 6, 4),
+    weeklyIncome: [
+      WeeklyIncome(
+        periodeStart: DateTime(2026, 5, 1),
+        periodeEnd: DateTime(2026, 5, 7),
+        pemasukan: 2050000,
+      ),
+      WeeklyIncome(
+        periodeStart: DateTime(2026, 5, 8),
+        periodeEnd: DateTime(2026, 5, 14),
+        pemasukan: 2050000,
+      ),
+      WeeklyIncome(
+        periodeStart: DateTime(2026, 5, 15),
+        periodeEnd: DateTime(2026, 5, 21),
+        pemasukan: 2050000,
+      ),
+      WeeklyIncome(
+        periodeStart: DateTime(2026, 5, 22),
+        periodeEnd: DateTime(2026, 5, 28),
+        pemasukan: 2050000,
+      ),
+      WeeklyIncome(
+        periodeStart: DateTime(2026, 5, 29),
+        periodeEnd: DateTime(2026, 6, 4),
+        pemasukan: 2050000,
+      ),
+    ],
+  );
+}
+
 void main() {
   setUpAll(() async {
     await initializeDateFormatting('id_ID');
@@ -19,7 +55,7 @@ void main() {
               width: 400,
               height: 220,
               child: FinancialReportCard(
-                summary: FinancialSummary.offlineSample(),
+                summary: sampleSummary(),
               ),
             ),
           ),
@@ -48,7 +84,7 @@ void main() {
               width: 320,
               height: 180,
               child: FinancialReportCard(
-                summary: FinancialSummary.offlineSample(),
+                summary: sampleSummary(),
               ),
             ),
           ),
@@ -70,7 +106,7 @@ void main() {
               width: 400,
               height: 220,
               child: FinancialReportCard(
-                summary: FinancialSummary.offlineSample(),
+                summary: sampleSummary(),
               ),
             ),
           ),
@@ -103,7 +139,7 @@ void main() {
               width: 1000,
               height: 700,
               child: FinancialReportCard(
-                summary: FinancialSummary.offlineSample(),
+                summary: sampleSummary(),
               ),
             ),
           ),

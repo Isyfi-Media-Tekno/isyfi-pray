@@ -1,13 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../app/providers/app_provider.dart';
 import '../../services/local_server_service.dart';
 
-/// Full-screen menu shown when the TV remote's OK is held (or Menu pressed).
+/// Full-screen tools page: QR for the CMS, plus debug time travel.
 ///
-/// Displays the config-server URL as a QR code (with the auth token baked in)
-/// plus the plain-text URL, so anyone on the same Wi-Fi can open the editor on
-/// their phone/laptop. The remote's long-press OK / Menu closes it again.
+/// On Android TV it is opened by the remote (long-press OK / Menu) through
+/// [RemoteKeyDetector]. On a phone/tablet it is opened by shaking the device
+/// (twice) through [ShakeToConfigListener], so a mobile build can be tested
+/// without a remote or ADB.
+///
+/// The QR encodes the config-server URL (auth token baked in) so anyone on the
+/// same Wi-Fi can open the editor from their own device. In debug builds the
+/// screen also owns the prayer time-travel buttons (Syuruq / Maghrib), which
+/// used to float over the home screen.
 class ConfigMenuScreen extends StatefulWidget {
   const ConfigMenuScreen({super.key});
 
@@ -43,6 +52,7 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      floatingActionButton: kDebugMode ? _buildDebugFabs() : null,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(28),
@@ -56,6 +66,40 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
         ),
       ),
     );
+  }
+
+  /// Debug-only time travel, mirrors the old home-screen FABs. Tapping one
+  /// jumps the clock and closes this page so the transition is visible.
+  Widget _buildDebugFabs() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FloatingActionButton.small(
+          heroTag: 'btnSyuruq',
+          backgroundColor: Colors.orange.withValues(alpha: 0.6),
+          tooltip: 'Uji waktu Syuruq',
+          onPressed: () => _runDebugTool(
+            (app) => app.enableFakeSyuruqTime(),
+          ),
+          child: const Icon(Icons.wb_sunny),
+        ),
+        const SizedBox(height: 10),
+        FloatingActionButton(
+          heroTag: 'btnMaghrib',
+          backgroundColor: Colors.red.withValues(alpha: 0.5),
+          tooltip: 'Uji waktu Maghrib',
+          onPressed: () => _runDebugTool(
+            (app) => app.enableFakeTime(),
+          ),
+          child: const Icon(Icons.fast_forward),
+        ),
+      ],
+    );
+  }
+
+  void _runDebugTool(void Function(AppProvider app) action) {
+    action(context.read<AppProvider>());
+    Navigator.of(context).maybePop();
   }
 
   Widget _buildQrCard() {
@@ -107,7 +151,8 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          "Scan QR atau buka URL di HP / laptop yang terhubung ke Wi-Fi yang sama:",
+          "Scan QR atau buka URL di HP / laptop yang terhubung ke Wi-Fi "
+          "yang sama:",
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.7),
             fontSize: 15,
@@ -115,7 +160,7 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
         ),
         const SizedBox(height: 12),
         SelectableText(
-          _authenticatedUrl ?? ( _loading ? 'Mencari alamat…' : '—'),
+          _authenticatedUrl ?? (_loading ? 'Mencari alamat…' : '—'),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 19,
@@ -140,7 +185,8 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
         ),
         const Spacer(),
         Text(
-          "Tutup: tekan lama tombol OK / tekan tombol Menu pada remote.",
+          "Tutup: tekan lama tombol OK / tombol Menu pada remote, atau "
+          "goyang HP sekali lagi.",
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.5),
             fontSize: 13,

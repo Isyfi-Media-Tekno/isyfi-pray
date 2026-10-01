@@ -6,13 +6,15 @@ import 'main_controller.dart';
 import 'providers/app_provider.dart';
 import 'providers/config_provider.dart';
 import 'remote_key_handler.dart';
+import 'shake_to_config.dart';
 
 /// Root widget: wires up the providers and hosts [MainController].
 ///
 /// The [configProvider] is injected from `main.dart` so persisted overrides
 /// are loaded before the tree builds and the local config server can hot-apply
-/// changes into it. The navigator key is shared with [RemoteKeyDetector],
-/// which toggles the config menu (QR) via the TV remote.
+/// changes into it. The navigator key is shared with [RemoteKeyDetector] and
+/// [ShakeToConfigListener], which toggle the config menu (QR) via the TV
+/// remote or by shaking a phone/tablet.
 class MasjidApp extends StatelessWidget {
   MasjidApp({super.key, this.configProvider})
       : _navigatorKey = GlobalKey<NavigatorState>();
@@ -37,9 +39,12 @@ class MasjidApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
         navigatorKey: _navigatorKey,
-        builder: (context, child) => RemoteKeyDetector(
+        builder: (context, child) => ShakeToConfigListener(
           navigatorKey: _navigatorKey,
-          child: child ?? const SizedBox.shrink(),
+          child: RemoteKeyDetector(
+            navigatorKey: _navigatorKey,
+            child: child ?? const SizedBox.shrink(),
+          ),
         ),
         home: const MainController(),
       ),

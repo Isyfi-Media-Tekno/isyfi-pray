@@ -61,29 +61,14 @@ void main() {
       expect(summary.weeklyIncome, isEmpty);
     });
 
-    test('offlineSample matches the example data', () {
+    test('offlineSample is an empty report dated now', () {
       final summary = FinancialSummary.offlineSample();
 
-      expect(summary.totalKasMasjid, 121381630);
+      expect(summary.totalKasMasjid, 0);
+      expect(summary.weeklyIncome, isEmpty);
       expect(
-        summary.saldoKasDate,
-        DateTime.parse('2026-06-03T17:00:00.000Z'),
-      );
-      expect(summary.weeklyIncome, hasLength(5));
-
-      // Every week reports the same income for this sample.
-      for (final week in summary.weeklyIncome) {
-        expect(week.pemasukan, 2050000);
-      }
-
-      // First and last weeks bracket the reported month.
-      expect(
-        summary.weeklyIncome.first.periodeStart,
-        DateTime.parse('2026-04-30T17:00:00.000Z'),
-      );
-      expect(
-        summary.weeklyIncome.last.periodeEnd,
-        DateTime.parse('2026-06-03T17:00:00.000Z'),
+        summary.saldoKasDate.difference(DateTime.now().toUtc()).abs(),
+        lessThan(const Duration(seconds: 5)),
       );
     });
 

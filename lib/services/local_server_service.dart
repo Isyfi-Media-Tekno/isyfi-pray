@@ -316,7 +316,7 @@ class LocalServerService {
       if (rawImages is List) {
         json['eventImages'] = rawImages.map((e) {
           if (e is Map) {
-            final m = Map<String, dynamic>.from(e as Map);
+            final m = Map<String, dynamic>.from(e);
             if (m['url'] is String) m['url'] = rewrite(m['url'] as String);
             return m;
           }

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +12,6 @@ import '../ui/prayer/iqomah_screen.dart';
 import '../ui/prayer/isyraq_screen.dart';
 import '../ui/prayer/jumat_screen.dart';
 import '../ui/prayer/shalat_screen.dart';
-import '../ui/settings/config_menu_screen.dart';
 import 'providers/app_provider.dart';
 import 'providers/config_provider.dart';
 
@@ -99,47 +97,6 @@ class MainController extends StatelessWidget {
             ),
         ],
       ),
-      floatingActionButton: _buildDebugFab(context),
-    );
-  }
-
-  // Simulation Button
-  Widget? _buildDebugFab(BuildContext context) {
-    if (!kDebugMode) return null;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FloatingActionButton.small(
-          heroTag: "btnSyuruq",
-          backgroundColor: Colors.orange.withValues(alpha: 0.6),
-          onPressed: () => context.read<AppProvider>().enableFakeSyuruqTime(),
-          child: const Icon(Icons.wb_sunny),
-        ),
-
-        const SizedBox(height: 10),
-
-        FloatingActionButton(
-          heroTag: "btnMaghrib",
-          backgroundColor: Colors.red.withValues(alpha: 0.5),
-          onPressed: () => context.read<AppProvider>().enableFakeTime(),
-          child: const Icon(Icons.fast_forward),
-        ),
-
-        const SizedBox(height: 10),
-
-        // Dev-only shortcut for the config server QR menu — same screen the
-        // TV remote's long-press OK / Menu opens (simulates the remote).
-        FloatingActionButton(
-          heroTag: "btnConfigQr",
-          backgroundColor: Colors.lightBlue.withValues(alpha: 0.6),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const ConfigMenuScreen(),
-            ),
-          ),
-          child: const Icon(Icons.qr_code),
-        ),
-      ],
     );
   }
 }

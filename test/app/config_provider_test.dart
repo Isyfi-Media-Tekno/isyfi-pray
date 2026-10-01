@@ -4,7 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jam_sholat_tv/app/providers/config_provider.dart';
 import 'package:jam_sholat_tv/core/constants/app_constants.dart';
 import 'package:jam_sholat_tv/domain/models/app_config.dart';
-import 'package:jam_sholat_tv/domain/models/financial_summary.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -233,12 +232,16 @@ void main() {
     });
 
     test('serves the offline financial sample by default', () {
-      final sample = FinancialSummary.offlineSample();
       final config = ConfigProvider();
 
-      expect(config.financialSummary.totalKasMasjid, sample.totalKasMasjid);
-      expect(config.financialSummary.saldoKasDate, sample.saldoKasDate);
-      expect(config.financialSummary.weeklyIncome, hasLength(5));
+      expect(config.financialSummary.totalKasMasjid, 0);
+      expect(config.financialSummary.weeklyIncome, isEmpty);
+      expect(
+        config.financialSummary.saldoKasDate
+            .difference(DateTime.now().toUtc())
+            .abs(),
+        lessThan(const Duration(seconds: 5)),
+      );
     });
 
     test('load() applies a persisted financialSummary override', () async {

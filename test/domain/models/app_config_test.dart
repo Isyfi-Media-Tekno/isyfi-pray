@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jam_sholat_tv/core/constants/app_constants.dart';
 import 'package:jam_sholat_tv/domain/models/app_config.dart';
-import 'package:jam_sholat_tv/domain/models/financial_summary.dart';
 
 void main() {
   group('AppConfig', () {
@@ -132,18 +131,18 @@ void main() {
       expect(AppConfig.defaults().eventImages, isEmpty);
     });
 
-    test('enableFinancialReport defaults on, parses explicit values', () {
-      expect(AppConfig.defaults().enableFinancialReport, true);
-      expect(AppConfig.fromJson({}).enableFinancialReport, true);
+    test('enableFinancialReport defaults off, parses explicit values', () {
+      expect(AppConfig.defaults().enableFinancialReport, false);
+      expect(AppConfig.fromJson({}).enableFinancialReport, false);
       expect(
-        AppConfig.fromJson({'enableFinancialReport': false})
+        AppConfig.fromJson({'enableFinancialReport': true})
             .enableFinancialReport,
-        false,
+        true,
       );
       expect(
-        AppConfig.fromJson({'enableFinancialReport': 'false'})
+        AppConfig.fromJson({'enableFinancialReport': 'true'})
             .enableFinancialReport,
-        false,
+        true,
       );
     });
 
@@ -301,14 +300,17 @@ void main() {
     });
 
     test('financialSummary defaults to the offline sample', () {
-      final sample = FinancialSummary.offlineSample();
       final config = AppConfig.defaults();
 
-      expect(config.financialSummary.totalKasMasjid, sample.totalKasMasjid);
-      expect(config.financialSummary.saldoKasDate, sample.saldoKasDate);
-      expect(config.financialSummary.weeklyIncome, hasLength(5));
-      expect(AppConfig.fromJson({}).financialSummary.totalKasMasjid,
-          sample.totalKasMasjid);
+      expect(config.financialSummary.totalKasMasjid, 0);
+      expect(config.financialSummary.weeklyIncome, isEmpty);
+      expect(
+        config.financialSummary.saldoKasDate
+            .difference(DateTime.now().toUtc())
+            .abs(),
+        lessThan(const Duration(seconds: 5)),
+      );
+      expect(AppConfig.fromJson({}).financialSummary.totalKasMasjid, 0);
     });
 
     test('fromJson parses a provided financialSummary', () {

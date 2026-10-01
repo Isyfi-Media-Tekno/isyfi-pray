@@ -70,7 +70,7 @@ There is **no cloud/network dependency** to operate — prayer times are compute
 
 `LocalServerService` (`lib/services/local_server_service.dart`) embeds a `shelf` HTTP server bound to `0.0.0.0:8080`, started in `main.dart`. It lets you edit settings from any browser on the same Wi-Fi:
 
-- **TV menu**: long-press the remote **OK** button (or press **Menu**) — `RemoteKeyDetector` (`lib/app/remote_key_handler.dart`) pushes `ConfigMenuScreen`, which shows a **QR code** of the authenticated URL.
+- **TV menu**: long-press the remote **OK** button (or press **Menu**) — `RemoteKeyDetector` (`lib/app/remote_key_handler.dart`) pushes `ConfigMenuScreen`, which shows a **QR code** of the authenticated URL. On a phone/tablet, **shake the device twice** (`ShakeToConfigListener`, `lib/app/shake_to_config.dart`, `sensors_plus`) to open the same screen — there is no remote on mobile.
 - **Auth**: every `/api/*` call needs the per-device token (`?token=…` or `Authorization: Bearer …`), generated once and persisted, so the QR URL is stable across restarts.
 - **Endpoints**: `GET /api/config` (current effective config as JSON) and `POST /api/config` (parse → persist to SharedPreferences → hot-apply via `ConfigProvider.applyConfig`, validating durations, lat/long ranges and fajr/isha angles). Image routes: `POST /api/upload/background` and `POST /api/upload/event` (raw image bytes, ≤ 10 MB, raster only; magic-byte sniffing when the browser sends `application/octet-stream`), `DELETE /api/event/<index>`, `DELETE /api/background` (restores the bundled image). Uploaded images are stored in the app-support `config_images` dir, referenced as baked `http://127.0.0.1:8080/images/<unique-name>` URLs, and served **publicly** (no token) at `GET /images/<name>` (path-traversal guarded) so the TV's `NetworkImage`/`CachedNetworkImage` loads need no plumbing. The web editor lives in `assets/web/index.html` and is served at `/`.
 - **Static serving**: `shelf_static` from on-disk `assets/web` when present (dev/tests), otherwise a `rootBundle` fallback (Android release — bundled assets aren't real files).
@@ -80,9 +80,11 @@ Reach the editor by scanning the QR on the TV, or open `http://<tv-ip>:8080?toke
 
 ## Debug tools you should know about
 
-In `kDebugMode`, a FAB column is overlaid on every screen (`MainController._buildDebugFab`):
+In `kDebugMode`, a FAB column is shown on the tools page (`ConfigMenuScreen`, opened by remote long-press OK / shake):
 - **Orange** (`enableFakeSyuruqTime`) — jumps the clock to just before Syuruq.
 - **Red** (`enableFakeTime`) — jumps the clock to ~1 minute before Maghrib.
+
+Tapping one also closes the tools page so the resulting transition is visible. The FABs are gone from `MainController`.
 
 `enableFakeJumatTime` also exists on `AppProvider` (jumps to the next Friday) but is **not wired to a button**. Fake time advances in real time and is the standard way to test prayer transitions without waiting.
 
