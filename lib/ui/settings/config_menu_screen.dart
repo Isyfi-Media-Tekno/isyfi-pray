@@ -84,6 +84,16 @@ class _ConfigMenuScreenState extends State<ConfigMenuScreen> {
           child: const Icon(Icons.wb_sunny),
         ),
         const SizedBox(height: 10),
+        FloatingActionButton.small(
+          heroTag: 'btnJumat',
+          backgroundColor: Colors.purple.withValues(alpha: 0.6),
+          tooltip: 'Uji waktu Jumat',
+          onPressed: () => _runDebugTool(
+            (app) => app.enableFakeJumatTime(),
+          ),
+          child: const Icon(Icons.mosque),
+        ),
+        const SizedBox(height: 10),
         FloatingActionButton(
           heroTag: 'btnMaghrib',
           backgroundColor: Colors.red.withValues(alpha: 0.5),

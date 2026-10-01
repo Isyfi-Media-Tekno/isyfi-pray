@@ -28,9 +28,9 @@ Lint rules come from `analysis_options.yaml` (package:flutter_lints). Keep lines
 In `kDebugMode` every duration is compressed (see `docs/STATE_MACHINE.md` → Durations), and the tools page (`ConfigMenuScreen` — open it with a remote long-press OK / Menu, or by shaking a phone/tablet) shows a FAB column:
 
 - **Orange sun FAB** — `enableFakeSyuruqTime()`: jumps the clock to just before Syuruq → walks the Syuruq/Iqomah/Isyraq path.
+- **Purple mosque FAB** — `enableFakeJumatTime()`: jumps the clock to the next Friday at Dzuhur −5s → walks adzan(Jumat) → the keep-silent khutbah screen.
 - **Red fast-forward FAB** — `enableFakeTime()`: jumps the clock to ~1 minute before Maghrib → walks adzan → iqomah → shalat.
 - Tapping a FAB also closes the tools page so the resulting transition is visible.
-- `enableFakeJumatTime()` exists on `AppProvider` (jumps to the next Friday at Dzuhur −5s) but is **not wired to a button**; call it from the debugger or wire a FAB while testing.
 
 Fake time advances in real seconds (`currentDateTime = _fakeTime ?? DateTime.now()`). Note fake-time mode also shrinks adzan/isyraq counters to 5s.
 

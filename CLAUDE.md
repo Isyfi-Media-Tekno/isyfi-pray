@@ -45,7 +45,7 @@ Read `docs/STATE_MACHINE.md` for the full diagram. Summary:
 
 - **Home** → at a prayer time (exact HH:mm match on the second) → **Adzan** (beep plays) → countdown ends → **Iqomah** (beep at ≤10s) → countdown ends → **Shalat** (beep, shows the hadith card) → countdown ends → **Home**.
 - **Syuruq is special**: at Syuruq time it goes to Iqomah state with label "Syuruq" ("MENANTI ISYRAQ"), then to **Isyraq**, then Home.
-- **Friday**: the Dzuhur entry is *displayed as* "Jumat" and Adzan("Jumat") → **jumatMode** (the "WAKTUNYA SHOLAT JUMAT" screen) → Home. Jumat has no iqomah stage.
+- **Friday**: the Dzuhur entry is *displayed as* "Jumat" and Adzan("Jumat") → **jumatMode** (the keep-silent/khutbah screen, `JumatScreen`) → Home. Jumat has no iqomah stage.
 - On app start, `checkInitialStatus` re-derives the current state from today's schedule so a mid-cycle restart (e.g. TV reboot during adzan) resumes in the right state.
 
 ### Friday / Jumat — fragile area, handled in several places
@@ -82,11 +82,12 @@ Reach the editor by scanning the QR on the TV, or open `http://<tv-ip>:8080?toke
 
 In `kDebugMode`, a FAB column is shown on the tools page (`ConfigMenuScreen`, opened by remote long-press OK / shake):
 - **Orange** (`enableFakeSyuruqTime`) — jumps the clock to just before Syuruq.
+- **Purple** (`enableFakeJumatTime`) — jumps the clock to the next Friday, 5 s before Dzuhur (the Jumat path).
 - **Red** (`enableFakeTime`) — jumps the clock to ~1 minute before Maghrib.
 
 Tapping one also closes the tools page so the resulting transition is visible. The FABs are gone from `MainController`.
 
-`enableFakeJumatTime` also exists on `AppProvider` (jumps to the next Friday) but is **not wired to a button**. Fake time advances in real time and is the standard way to test prayer transitions without waiting.
+Fake time advances in real time and is the standard way to test prayer transitions without waiting.
 
 ## Conventions & gotchas
 

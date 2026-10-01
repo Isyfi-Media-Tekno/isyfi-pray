@@ -38,10 +38,10 @@ On the Syuruq trigger, `_handleCycleLogic` sets `status = iqomah` with `currentP
 ```
    "Dzuhur" HH:mm match (renamed "Jumat") ─▶ ADZAN("Jumat") ─▶ JUMAT_MODE ─▶ HOME
                                                                (2700s / 45 min,
-                                                                "WAKTUNYA SHOLAT JUMAT" screen)
+                                                                keep-silent screen)
 ```
 
-On Friday, `_handleCycleLogic` renames the Dzuhur entry to **Jumat** before triggering, and `_handleAdzanTransition` sends Jumat to `jumatMode` instead of `iqomah` (no iqomah stage on Friday). The Jumat screen shows khutbah-etiquette text.
+On Friday, `_handleCycleLogic` renames the Dzuhur entry to **Jumat** before triggering, and `_handleAdzanTransition` sends Jumat to `jumatMode` instead of `iqomah` (no iqomah stage on Friday). The Jumat screen shows only the keep-silent pictogram (no talking, no ringing phones during the khutbah).
 
 ## Durations
 
