@@ -1,22 +1,27 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/widgets/background_image.dart';
 
 /// Friday khutbah screen (`AppStatus.jumatMode`).
 ///
 /// Shown from the Jumat adzan until the end of the khutbah window. Like the
-/// other prayer screens it is a glass card over the background image, but its
-/// only content is the universal "keep silent" pictogram: no talking and no
-/// ringing phones while the khatib is speaking.
+/// other prayer screens it is a glass card over the background image, with two
+/// signage pictograms as its only content:
+///
+/// - left: a red prohibition sign over a speaking head — no talking;
+/// - right: a red-ringed "finger on the lips" sign — keep silent.
+///
+/// The pictograms are transparent PNGs, so the blurred background shows
+/// through the white silhouette inside each sign.
 class JumatScreen extends StatelessWidget {
   const JumatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
+    final double signSize = screenSize.height * 0.5;
 
     return Scaffold(
       body: Stack(
@@ -40,30 +45,27 @@ class JumatScreen extends StatelessWidget {
                       ),
                     ),
                     child: Center(
-                      child: FractionallySizedBox(
-                        widthFactor: 0.5,
-                        heightFactor: 0.62,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.white.withValues(alpha: 0.08),
-                                blurRadius: 90,
-                                spreadRadius: 40,
-                              ),
-                            ],
-                          ),
-                          child: SvgPicture.asset(
-                            'assets/images/quiet_shush.svg',
-                            semanticsLabel: 'Mohon tenang, jangan berbicara '
-                                'dan matikan nada handphone',
-                            fit: BoxFit.contain,
-                            colorFilter: const ColorFilter.mode(
-                              Colors.white,
-                              BlendMode.srcIn,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/images/no_talking.png',
+                              width: signSize,
+                              height: signSize,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.medium,
                             ),
-                          ),
+                            SizedBox(width: signSize * 0.14),
+                            Image.asset(
+                              'assets/images/keep_silent.png',
+                              width: signSize,
+                              height: signSize,
+                              fit: BoxFit.contain,
+                              filterQuality: FilterQuality.medium,
+                            ),
+                          ],
                         ),
                       ),
                     ),

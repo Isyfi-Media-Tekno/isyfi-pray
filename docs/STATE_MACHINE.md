@@ -41,7 +41,7 @@ On the Syuruq trigger, `_handleCycleLogic` sets `status = iqomah` with `currentP
                                                                 keep-silent screen)
 ```
 
-On Friday, `_handleCycleLogic` renames the Dzuhur entry to **Jumat** before triggering, and `_handleAdzanTransition` sends Jumat to `jumatMode` instead of `iqomah` (no iqomah stage on Friday). The Jumat screen shows only the keep-silent pictogram (no talking, no ringing phones during the khutbah).
+On Friday, `_handleCycleLogic` renames the Dzuhur entry to **Jumat** before triggering, and `_handleAdzanTransition` sends Jumat to `jumatMode` instead of `iqomah` (no iqomah stage on Friday). The Jumat screen shows two signage pictograms — a red "no talking" prohibition sign and a red-ringed "keep silent" sign — so the congregation stays quiet and mutes their phones during the khutbah.
 
 ## Durations
 
