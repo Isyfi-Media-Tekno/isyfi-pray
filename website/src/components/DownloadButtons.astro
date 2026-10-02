@@ -1,0 +1,50 @@
+---
+import Button from "./Button.astro";
+import { Icon } from "astro-icon/components";
+import { siteConfig } from "../data/site";
+
+interface Props {
+  /** "md" for hero and final CTA, "sm" for the header. */
+  size?: "md" | "sm";
+}
+
+const { size = "md" } = Astro.props;
+const playEnabled = siteConfig.playStoreUrl.length > 0;
+const playIconPath =
+  "M3.609 1.814L13.792 12 3.61 22.186a2.38 2.38 0 0 1-.22-.387 2.3 2.3 0 0 1-.14-.803V2.996c0-.287.05-.56.14-.804.057-.145.13-.275.22-.378zm1.096-.64c.265-.11.554-.174.855-.174.52 0 1.02.19 1.408.535l9.28 5.257L14.774 8.27 4.705 1.174zm11.543 7.82l1.636.928c1.378.78 1.378 2.062 0 2.842l-1.636.928-1.745-1.349 1.745-1.349zm-1.474 4.316l1.474 1.475-9.28 5.257c-.388.345-.888.535-1.408.535a2.29 2.29 0 0 1-.855-.174l10.07-7.093z";
+---
+
+<div class={["flex flex-col items-center gap-3 sm:flex-row", size === "md" ? "justify-center" : ""].join(" ")}>
+  <Button href={siteConfig.apkUrl} external variant="primary" size={size}>
+    <Icon name="lucide:download" class="h-4 w-4" aria-hidden="true" />
+    <span>{size === "sm" ? "Download APK" : "Download APK (Gratis)"}</span>
+  </Button>
+
+  {
+    size === "md" &&
+      (playEnabled ? (
+        <Button href={siteConfig.playStoreUrl} external variant="secondary" size={size}>
+          <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+            <path d={playIconPath} />
+          </svg>
+          <span>Unduh di Google Play</span>
+        </Button>
+      ) : (
+        <Button variant="disabled" size={size}>
+          <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+            <path d={playIconPath} />
+          </svg>
+          <span>Segera Hadir di Play Store</span>
+        </Button>
+      ))
+  }
+</div>
+
+{
+  size === "md" && (
+    <div class="mt-5 space-y-1 text-center text-xs text-muted sm:text-sm">
+      <p class="font-medium">Gratis, tanpa langganan dan tanpa akun</p>
+      <p>{siteConfig.requirements}</p>
+    </div>
+  )
+}

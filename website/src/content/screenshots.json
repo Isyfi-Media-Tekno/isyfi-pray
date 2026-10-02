@@ -1,0 +1,51 @@
+[
+  {
+    "id": "home",
+    "image": "home.jpg",
+    "caption": "Tampilan utama",
+    "alt": "Jam digital, tanggal Hijriah dan Masehi, jadwal sholat, dan running text",
+    "sortOrder": 1
+  },
+  {
+    "id": "adzan",
+    "image": "adzan.jpg",
+    "caption": "Waktu adzan",
+    "alt": "Layar waktu adzan berkumandang untuk sholat Maghrib",
+    "sortOrder": 2
+  },
+  {
+    "id": "iqamah",
+    "image": "iqamah.jpg",
+    "caption": "Menuju iqomah",
+    "alt": "Layar hitung mundur menuju iqomah dengan pengingat meluruskan shaf",
+    "sortOrder": 3
+  },
+  {
+    "id": "shalat",
+    "image": "shalat.jpg",
+    "caption": "Shalat berlangsung",
+    "alt": "Layar shalat berlangsung dengan hadits tentang meluruskan shaf",
+    "sortOrder": 4
+  },
+  {
+    "id": "isyraq",
+    "image": "isyraq.jpg",
+    "caption": "Waktu isyraq",
+    "alt": "Layar menanti isyraq setelah syuruq",
+    "sortOrder": 5
+  },
+  {
+    "id": "laporan-keuangan",
+    "image": "laporan-keuangan.jpg",
+    "caption": "Laporan kas masjid",
+    "alt": "Layar laporan keuangan masjid: saldo kas dan pemasukan pekan ini",
+    "sortOrder": 6
+  },
+  {
+    "id": "live-makkah",
+    "image": "live-makkah.jpg",
+    "caption": "Live Makkah",
+    "alt": "Layar siaran langsung Masjidil Haram sebelum waktu Maghrib",
+    "sortOrder": 7
+  }
+]

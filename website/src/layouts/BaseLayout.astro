@@ -1,0 +1,59 @@
+---
+import "@fontsource-variable/plus-jakarta-sans";
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { appIconHref } from "../data/assets";
+import { siteConfig } from "../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Route path used to build the canonical URL, e.g. "/" or "/kebijakan-privasi". */
+  path: string;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const { title, description, path, jsonLd = [] } = Astro.props;
+
+const absolute = (value: string) =>
+  siteConfig.siteUrl ? new URL(value, siteConfig.siteUrl).href : value;
+
+const canonical = siteConfig.siteUrl ? new URL(path, siteConfig.siteUrl).href : null;
+const ogImage = absolute(siteConfig.ogImage);
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content={siteConfig.appName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <link rel="icon" type="image/png" href={appIconHref} />
+    <link rel="apple-touch-icon" href={appIconHref} />
+    {jsonLd.map((entry) => (
+      <script type="application/ld+json" set:html={JSON.stringify(entry)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-page text-ink antialiased">
+    <a href="#konten" class="skip-link">Lewati ke konten</a>
+    <Header />
+    <main id="konten">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

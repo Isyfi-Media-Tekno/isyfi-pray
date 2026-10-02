@@ -1,0 +1,79 @@
+---
+import { navLinks, withBase } from "../data/navigation";
+import { appIconHref } from "../data/assets";
+import { siteConfig } from "../data/site";
+
+const links = [...navLinks].sort((a, b) => a.sortOrder - b.sortOrder);
+const year = new Date().getFullYear();
+const hasContact = siteConfig.whatsappUrl.length > 0 || siteConfig.email.length > 0;
+---
+
+<footer class="border-t border-line bg-surface">
+  <div class="mx-auto grid w-full max-w-[1120px] gap-10 px-6 py-14 md:grid-cols-3">
+    <div>
+      <a href={withBase("/")} class="inline-flex items-center gap-2.5 font-extrabold tracking-tight text-ink">
+        <img src={appIconHref} alt="" width="36" height="36" class="h-9 w-9 rounded-xl" />
+        <span>{siteConfig.appName}</span>
+      </a>
+      {siteConfig.masjidReference && <p class="mt-4 text-sm text-muted">{siteConfig.masjidReference}</p>}
+    </div>
+
+    <div>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-ink">Navigasi</h2>
+      <ul class="mt-4 space-y-2">
+        {
+          links.map((link) => (
+            <li>
+              <a href={withBase(link.href)} class="text-sm text-muted transition-colors hover:text-brand">
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-ink">Informasi</h2>
+      <ul class="mt-4 space-y-2">
+        <li>
+          <a href={withBase("/kebijakan-privasi")} class="text-sm text-muted transition-colors hover:text-brand">
+            Kebijakan Privasi
+          </a>
+        </li>
+        {
+          hasContact && (
+            <li>
+              <h3 class="pt-3 text-xs font-semibold uppercase tracking-wider text-ink">Kontak</h3>
+            </li>
+          )
+        }
+        {
+          siteConfig.whatsappUrl && (
+            <li>
+              <a href={siteConfig.whatsappUrl} target="_blank" rel="noopener" class="text-sm text-muted transition-colors hover:text-brand">
+                WhatsApp
+              </a>
+            </li>
+          )
+        }
+        {
+          siteConfig.email && (
+            <li>
+              <a href={`mailto:${siteConfig.email}`} class="text-sm text-muted transition-colors hover:text-brand">
+                {siteConfig.email}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-line">
+    <div class="mx-auto flex w-full max-w-[1120px] flex-col gap-1 px-6 py-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {siteConfig.organizationName}. Seluruh hak cipta dilindungi.</p>
+      <p>{siteConfig.tagline}</p>
+    </div>
+  </div>
+</footer>

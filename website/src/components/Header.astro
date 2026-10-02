@@ -1,0 +1,80 @@
+---
+import { Icon } from "astro-icon/components";
+import { navLinks, withBase } from "../data/navigation";
+import { appIconHref } from "../data/assets";
+import { siteConfig } from "../data/site";
+import DownloadButtons from "./DownloadButtons.astro";
+
+const links = [...navLinks].sort((a, b) => a.sortOrder - b.sortOrder);
+const homeHref = withBase("/");
+---
+
+<header class="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur">
+  <div class="mx-auto flex h-16 w-full max-w-[1120px] items-center justify-between px-6">
+    <a href={homeHref} class="inline-flex items-center gap-2.5 font-extrabold tracking-tight text-ink">
+      <img src={appIconHref} alt="" width="36" height="36" class="h-9 w-9 rounded-xl" />
+      <span>{siteConfig.appName}</span>
+    </a>
+
+    <nav class="hidden items-center gap-6 md:flex" aria-label="Navigasi utama">
+      {
+        links.map((link) => (
+          <a href={withBase(link.href)} class="text-sm font-medium text-muted transition-colors hover:text-brand">
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="hidden md:block">
+      <DownloadButtons size="sm" />
+    </div>
+
+    <button
+      id="menu-toggle"
+      type="button"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line text-ink md:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="sr-only">Buka menu</span>
+      <Icon name="lucide:menu" class="menu-icon-open h-5 w-5" aria-hidden="true" />
+      <Icon name="lucide:x" class="menu-icon-close h-5 w-5" aria-hidden="true" />
+    </button>
+  </div>
+
+  <div id="mobile-menu" hidden class="border-t border-line bg-surface md:hidden">
+    <nav class="mx-auto flex max-w-[1120px] flex-col px-6 py-3" aria-label="Navigasi seluler">
+      {
+        links.map((link) => (
+          <a href={withBase(link.href)} class="border-b border-line/60 py-3 text-sm font-medium text-ink last:border-b-0">
+            {link.label}
+          </a>
+        ))
+      }
+      <div class="py-4">
+        <DownloadButtons size="sm" />
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById("menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+
+  toggle?.addEventListener("click", () => {
+    const open = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!open));
+    menu?.toggleAttribute("hidden", open);
+    const label = toggle.querySelector(".sr-only");
+    if (label) label.textContent = open ? "Buka menu" : "Tutup menu";
+  });
+
+  menu?.querySelectorAll("a").forEach((link) =>
+    link.addEventListener("click", () => {
+      toggle?.setAttribute("aria-expanded", "false");
+      menu?.setAttribute("hidden", "");
+    }),
+  );
+</script>
