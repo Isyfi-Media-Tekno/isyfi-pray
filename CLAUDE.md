@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-**Jam Sholat TV** — a Flutter Android app for a masjid TV/display screen (Masjid Al Hijrah CGE, Depok). It shows the current time, today's prayer schedule, and a live countdown to the next prayer, then cycles through full-screen states as each prayer time arrives: **Adzan** → **Iqomah** → **Shalat**, with a dedicated **Jumat** state on Friday and an **Isyraq** countdown after Syuruq. On the home screen it alternates the clock+schedule with a **monthly financial report** fed by offline sample data (see "Data sources"). Announcement-image (event mode) screens rotate in automatically once images are uploaded through the config server (dormant until then). It plays a live Makkah YouTube stream during the 30 minutes before Maghrib / Jumat.
+**Jam Sholat TV** — a Flutter Android app for a masjid TV/display screen. It shows the current time, today's prayer schedule, and a live countdown to the next prayer, then cycles through full-screen states as each prayer time arrives: **Adzan** → **Iqomah** → **Shalat**, with a dedicated **Jumat** state on Friday and an **Isyraq** countdown after Syuruq. On the home screen it alternates the clock+schedule with a **monthly financial report** fed by offline sample data (see "Data sources"). Announcement-image (event mode) screens rotate in automatically once images are uploaded through the config server (dormant until then). It plays a live Makkah YouTube stream during the 30 minutes before Maghrib / Jumat.
 
 All UI text is Indonesian. The app runs on Android TV/tablet in landscape, fullscreen, with the screen kept awake.
 

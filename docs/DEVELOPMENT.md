@@ -48,7 +48,7 @@ API: `GET/POST /api/config` (token required), image routes `POST /api/upload/bac
 curl "http://<tv-ip>:8080/api/config?token=<token>"
 curl -X POST "http://<tv-ip>:8080/api/config?token=<token>" \
   -H 'Content-Type: application/json' \
-  -d '{"marqueeText":"Selamat Datang di Masjid Al Hijrah"}'
+  -d '{"marqueeText":"Selamat Datang di Masjid"}'
 curl -X POST "http://<tv-ip>:8080/api/upload/background?token=<token>" \
   --data-binary @background.jpg
 # GET /api/config returns backgroundImage like ".../images/bg_123.jpg" —
