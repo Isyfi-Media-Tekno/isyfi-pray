@@ -42,35 +42,46 @@ jobs:
 
       - name: Build APK
         run: |
-          # Single universal APK: 32-bit ARM (armeabi-v7a) installs on all
-          # Android TV/Box devices (32-bit and 64-bit), instead of one
-          # split APK per CPU arch.
+          # --split-per-abi: one APK per CPU arch (arm64 for the masjid TV)
+          # instead of one fat 50MB+ APK bundling arm64 + arm32 + x86_64.
           # --obfuscate trims Dart code size on top of that.
-          fvm flutter build apk --release --target-platform android-arm \
+          fvm flutter build apk --release --split-per-abi \
           --obfuscate --split-debug-info=build/debug-info \
           --build-name=${{ steps.get_version.outputs.VERSION }} \
           --build-number=${{ github.run_number }}
 
-      - name: Rename APK
-        run: |
-          mv build/app/outputs/flutter-apk/app-release.apk \
-          build/app/outputs/flutter-apk/isyfi-pray-v${{ steps.get_version.outputs.VERSION }}.apk
-
       - name: Get Latest Changelog
         id: changelog_reader
         run: |
-          sed -n '/^##/,/^##/p' CHANGELOG.md | sed '$d' > latest_changelog.txt
-          echo "content<<EOF" >> $GITHUB_OUTPUT
-          cat latest_changelog.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Extract only the newest section: from the first "## " heading up to
+          # the next one. The old `sed -n '/^##/,/^##/p'` restarted the range at
+          # every later heading, so old sections leaked into the release body.
+          # Drop the heading (the release title already shows the version) and
+          # trim trailing blank lines.
+          awk '
+            /^## / { section++; if (section == 2) exit; next }
+            section != 1 { next }
+            !NF && !started { next }
+            { started = 1; n++; lines[n] = $0; if (NF) last = n }
+            END { for (i = 1; i <= last; i++) print lines[i] }
+          ' CHANGELOG.md > release-notes.md
+
+          {
+            echo "content<<RELEASE_NOTES_EOF"
+            cat release-notes.md
+            echo "RELEASE_NOTES_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/app/outputs/flutter-apk/isyfi-pray-v${{ steps.get_version.outputs.VERSION }}.apk
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
           name: Release ${{ steps.get_version.outputs.VERSION }}
           body: ${{ steps.changelog_reader.outputs.content }}
           tag_name: v${{ steps.get_version.outputs.VERSION }}
+          fail_on_unmatched_files: true
           draft: false
           prerelease: false
         env:

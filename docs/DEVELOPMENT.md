@@ -77,9 +77,10 @@ Releases are tag-driven — **`pubspec.yaml` version stays `1.0.0+1`**; do not b
 
 - Builds a release APK with `--build-name` from the tag and `--build-number` from the GitHub run number.
 - Reads the top `CHANGELOG.md` section as the release body.
-- Publishes a GitHub Release with the APK attached (`softprops/action-gh-release`).
+- Publishes a GitHub Release with both split APKs attached (`softprops/action-gh-release`).
 
-Output APK: `build/app/outputs/flutter-apk/app-release.apk`.
+Output APKs: `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` and
+`build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk`.
 
 For a manual local build:
 
