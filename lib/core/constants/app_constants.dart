@@ -1,4 +1,3 @@
-import 'package:adhan_dart/adhan_dart.dart';
 import 'package:flutter/foundation.dart';
 
 class AppConstants {
@@ -52,12 +51,23 @@ class AppConstants {
   static const int iqomahTestingDuration = 5;
   static const int monthOfRamadhan = 9; // 9 = Ramadhan in Hijri Calendar
 
-  // --- prayer calculation (Kemenag / adhan_dart) ---
-  // All prayer times are computed fully on-device; no network or bundled
+  // --- prayer calculation (Kemenag / Meeus) ---
+  // All prayer times are computed fully on-device with the pure-Dart Meeus
+  // implementation in `prayer_times_meeus.dart`; no network or bundled
   // schedule is needed. Fine-tune the coordinates to the masjid's exact
   // position.
-  static const double latitude = -6.40;
-  static const double longitude = 106.82;
+  //
+  // Coordinates are the Kemenag Jakarta reference point calibrated against
+  // Bimas Islam's published schedule (not the Monas/city-centre marker).
+  static const double latitude = -6.17;
+  static const double longitude = 106.835;
+
+  /// Fixed time-zone offset (hours) used for the schedule: 7 = WIB,
+  /// 8 = WITA, 9 = WIT.
+  ///
+  /// This is deliberately a config value, never `DateTime.now()
+  /// .timeZoneOffset`: a masjid TV's device clock zone can be wrong.
+  static const double tzOffsetHours = 7;
   static const double fajrAngle = 20.0; // Kemenag
   static const double ishaAngle = 18.0; // Kemenag
 
@@ -65,7 +75,9 @@ class AppConstants {
   static const double muhammadiyahFajrAngle = 18.0;
   static const double muhammadiyahIshaAngle = 18.0;
 
-  static const Madhab madhab = Madhab.shafi;
+  /// Serialized Ashar madhab (`'shafi'` default, or `'hanafi'`). Only the Ashar
+  /// time differs: Hanafi uses a shadow factor of 2, the others 1.
+  static const String madhab = 'shafi';
 
   /// Prayer-calculation method: `'kemenag'` (Subuh 20°, Isya 18°),
   /// `'muhammadiyah'` (MTT PP Muhammadiyah, 18°/18°) or `'kustom'` (the stored
@@ -82,28 +94,25 @@ class AppConstants {
   ];
 
   /// Serialized names accepted for [madhab] in `AppConfig` (kept in sync with
-  /// the adhan_dart enum so `domain/` never imports adhan_dart directly).
-  static final List<String> madhabNames = [
-    for (final Madhab m in Madhab.values) m.name,
+  /// the Ashar shadow-factor rules: `hanafi` uses 2, every other value 1).
+  static const List<String> madhabNames = [
+    'shafi',
+    'hanafi',
+    'maliki',
+    'hanbali',
   ];
+
   // Per-prayer ihtiyat (minutes) applied to the raw calculation, Kemenag keys.
-  // Default is +2 minutes for every salat; Syuruq (terbit) is *earlier* so its
+  // Salat times gain a few minutes; Syuruq (terbit) is *earlier* so its
   // ihtiyat is negative (-2). Editable at runtime through the config server.
   static const Map<String, int> ihtiyat = {
-    'imsak': 2,
     'subuh': 2,
     'terbit': -2,
-    'dhuhur': 2,
+    'dzuhur': 3,
     'ashar': 2,
     'maghrib': 2,
     'isya': 2,
   };
-
-  /// Solar altitude (degrees below the horizon) at which the sun is considered
-  /// to rise/set at sea level: the standard 0.8333° = refraction (34′) plus the
-  /// sun's semi-diameter (16′). adhan_dart hardcodes this value internally; we
-  /// re-use it for the elevation dip (see `AppConfig.horizonDip`).
-  static const double sunsetAngle = 50.0 / 60.0;
 
   /// Whether the masjid's elevation above sea level should be folded into the
   /// Syuruq / Maghrib calculation. Defaults to off; must be explicitly enabled

@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import '../../core/constants/app_constants.dart';
 import 'event_image.dart';
 import 'financial_summary.dart';
@@ -79,6 +77,11 @@ class AppConfig {
   /// config server and used by [CalculatePrayerTimes].
   final double latitude;
   final double longitude;
+
+  /// Fixed time-zone offset (hours) used to place the computed schedule on the
+  /// wall clock: 7 = WIB, 8 = WITA, 9 = WIT. Deliberately part of the config
+  /// so a mis-set device clock/zone cannot shift the jadwal.
+  final double tzOffsetHours;
   final double fajrAngle;
   final double ishaAngle;
 
@@ -102,9 +105,9 @@ class AppConfig {
   final String calculationMethod;
 
   /// Serialized madhab name (one of [AppConstants.madhabNames], e.g.
-  /// `'shafi'`/`'hanafi'`). Kept as a String so `domain/` stays free of the
-  /// adhan_dart import; the calculator maps it back to the enum. Only affects
-  /// the Ashar time.
+  /// `'shafi'`/`'hanafi'`). Kept as a String so the domain stays free of any
+  /// calculation-package enum; the calculator maps Hanafi to the Ashar shadow
+  /// factor 2 and every other value to 1. Only affects the Ashar time.
   final String madhab;
 
   /// Fajr angle in effect, derived from [calculationMethod]: the two presets
@@ -133,25 +136,9 @@ class AppConfig {
     }
   }
 
-  /// Dip of the astronomical horizon (degrees) seen from [elevationMeters]
-  /// above sea level, or `0.0` at/under sea level.
-  ///
-  /// Rising from sea level, the horizon drops by this angle — at 100 m it is
-  /// ~0.32°, worth roughly a minute of time. The elevation correction re-uses
-  /// it on the *rising/setting* edges only (Syuruq and Maghrib), because
-  /// Kemenag and Muhammadiyah both define Subuh/Isya as fixed depression angles
-  /// measured from the (sea-level) horizon — the dip is not applied to them.
-  static double horizonDip(double elevationMeters) {
-    if (elevationMeters <= 0) return 0.0;
-    const double earthRadiusMeters = 6371000.0;
-    final double dipRadians =
-        math.acos(earthRadiusMeters / (earthRadiusMeters + elevationMeters));
-    return dipRadians * 180.0 / math.pi;
-  }
-
   /// Per-prayer ihtiyat (minutes) keyed by the Kemenag names. Always carries
-  /// all seven keys (`imsak, subuh, terbit, dhuhur, ashar, maghrib, isya`);
-  /// `terbit` may be negative.
+  /// all six keys (`subuh, terbit, dzuhur, ashar, maghrib, isya`); `terbit`
+  /// may be negative.
   final Map<String, int> ihtiyat;
   final String marqueeText;
   final String backgroundImage;
@@ -195,6 +182,7 @@ class AppConfig {
     required this.liveMakkahUrl,
     required this.latitude,
     required this.longitude,
+    required this.tzOffsetHours,
     required this.fajrAngle,
     required this.ishaAngle,
     required this.useElevation,
@@ -232,7 +220,7 @@ class AppConfig {
       final String raw = value?.toString().toLowerCase() ?? '';
       return AppConstants.madhabNames.contains(raw)
           ? raw
-          : AppConstants.madhab.name;
+          : AppConstants.madhab;
     }
 
     String parseKalender(dynamic value) {
@@ -257,6 +245,10 @@ class AppConfig {
     Map<String, int> parseIhtiyat(dynamic value) {
       // Start from the full Kemenag default map so every lookup in the
       // calculator is always non-null, then overlay saved per-key values.
+      // Saved configs from older builds may still use `dhuhur` (or `imsak`);
+      // `dhuhur` is migrated to the calculator's `dzuhur` key and unknown keys
+      // (including `imsak`, which the jadwal contract does not emit) are
+      // dropped.
       final Map<String, int> result = Map<String, int>.from(
         AppConstants.ihtiyat,
       );
@@ -265,8 +257,11 @@ class AppConfig {
           final int? parsed = entry.value is num
               ? (entry.value as num).toInt()
               : int.tryParse(entry.value.toString());
-          if (parsed != null) {
-            result[entry.key.toString()] = parsed;
+          if (parsed == null) continue;
+          final String key = entry.key.toString();
+          final String normalized = key == 'dhuhur' ? 'dzuhur' : key;
+          if (result.containsKey(normalized)) {
+            result[normalized] = parsed;
           }
         }
       }
@@ -345,6 +340,10 @@ class AppConfig {
         json['longitude'],
         AppConstants.longitude,
       ).clamp(-180.0, 180.0).toDouble(),
+      tzOffsetHours: parseDouble(
+        json['tzOffsetHours'],
+        AppConstants.tzOffsetHours,
+      ).clamp(-12.0, 14.0).toDouble(),
       fajrAngle: parseDouble(json['fajrAngle'], AppConstants.fajrAngle),
       ishaAngle: parseDouble(json['ishaAngle'], AppConstants.ishaAngle),
       useElevation: parseBool(json['useElevation'], AppConstants.useElevation),
@@ -401,6 +400,7 @@ class AppConfig {
       'liveMakkahUrl': liveMakkahUrl,
       'latitude': latitude,
       'longitude': longitude,
+      'tzOffsetHours': tzOffsetHours,
       'fajrAngle': fajrAngle,
       'ishaAngle': ishaAngle,
       'useElevation': useElevation,

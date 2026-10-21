@@ -38,10 +38,8 @@ void main() {
   });
 
   test('prayers appear in chronological order around the day', () {
-    // `.toLocal()` shifts wall-clock times by the test machine's timezone, so
-    // the sequence may wrap midnight (e.g. on a UTC machine). The circular
-    // forward gap between consecutive prayers is timezone-invariant: positive
-    // and always less than half a day.
+    // Times are placed on the configured WIB wall clock (never `.toLocal()`),
+    // so the sequence is stable regardless of the test machine's time zone.
     final result = calculator(now: now);
     final minutes = result.values.map(toMinutes).toList();
 
@@ -55,6 +53,39 @@ void main() {
 
   test('is deterministic for the same instant', () {
     expect(calculator(now: now), calculator(now: now));
+  });
+
+  test('matches the Kemenag Jakarta reference table exactly', () {
+    // Values published by Bimas Islam (Kemenag) for Jakarta. The calculator
+    // must reproduce them minute-for-minute — no tolerance.
+    const reference = {
+      '2026-01-01': ['04:19', '05:39', '12:00', '15:26', '18:14', '19:29'],
+      '2026-06-30': ['04:42', '06:00', '12:00', '15:21', '17:53', '19:07'],
+      '2026-10-21': ['04:13', '05:26', '11:41', '14:50', '17:49', '18:59'],
+    };
+
+    for (final entry in reference.entries) {
+      final parts = entry.key.split('-').map(int.parse).toList();
+      final result = calculator(
+        now: DateTime(parts[0], parts[1], parts[2], 10, 0),
+      );
+
+      expect(result.values.toList(), entry.value, reason: entry.key);
+    }
+  });
+
+  test('uses the configured time zone, not the device clock zone', () {
+    final wib = calculator(now: now);
+    final wita = calculator(
+      now: now,
+      config: AppConfig.fromJson({'tzOffsetHours': 8}),
+    );
+
+    // One hour of zone offset shifts every wall-clock entry by exactly 60
+    // minutes (the ihtiyat/rounding step is unchanged).
+    for (final key in wib.keys) {
+      expect(toMinutes(wita[key]!) - toMinutes(wib[key]!), 60, reason: key);
+    }
   });
 
   test('prayer times shift only slightly between consecutive days', () {

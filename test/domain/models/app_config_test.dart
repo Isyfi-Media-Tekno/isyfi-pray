@@ -177,10 +177,11 @@ void main() {
 
       expect(config.latitude, AppConstants.latitude);
       expect(config.longitude, AppConstants.longitude);
+      expect(config.tzOffsetHours, AppConstants.tzOffsetHours);
       expect(config.fajrAngle, AppConstants.fajrAngle);
       expect(config.ishaAngle, AppConstants.ishaAngle);
       expect(config.calculationMethod, AppConstants.calculationMethod);
-      expect(config.madhab, AppConstants.madhab.name);
+      expect(config.madhab, AppConstants.madhab);
       expect(config.ihtiyat, AppConstants.ihtiyat);
     });
 
@@ -206,7 +207,7 @@ void main() {
     test('ihtiyat merges partially over the full default map', () {
       final config = AppConfig.fromJson({'ihtiyat': {'subuh': 5}});
 
-      expect(config.ihtiyat, hasLength(7));
+      expect(config.ihtiyat, hasLength(6));
       expect(config.ihtiyat['subuh'], 5);
       expect(config.ihtiyat['maghrib'], AppConstants.ihtiyat['maghrib']);
       expect(config.ihtiyat['terbit'], AppConstants.ihtiyat['terbit']);
@@ -215,9 +216,9 @@ void main() {
     test('madhab is normalized and falls back on unknown values', () {
       expect(AppConfig.fromJson({'madhab': 'HANAFI'}).madhab, 'hanafi');
       expect(AppConfig.fromJson({'madhab': 'bogus'}).madhab,
-          AppConstants.madhab.name);
+          AppConstants.madhab);
       expect(AppConfig.fromJson({'madhab': ''}).madhab,
-          AppConstants.madhab.name);
+          AppConstants.madhab);
     });
 
     test('clamps latitude and longitude on parse', () {
@@ -225,6 +226,21 @@ void main() {
       expect(AppConfig.fromJson({'latitude': -91}).latitude, -90.0);
       expect(AppConfig.fromJson({'longitude': 181}).longitude, 180.0);
       expect(AppConfig.fromJson({'longitude': -181}).longitude, -180.0);
+    });
+
+    test('parses and clamps the fixed time zone offset', () {
+      expect(AppConfig.fromJson({}).tzOffsetHours, 7.0);
+      expect(AppConfig.fromJson({'tzOffsetHours': 8}).tzOffsetHours, 8.0);
+      expect(AppConfig.fromJson({'tzOffsetHours': 9}).tzOffsetHours, 9.0);
+      expect(AppConfig.fromJson({'tzOffsetHours': -20}).tzOffsetHours, -12.0);
+      expect(AppConfig.fromJson({'tzOffsetHours': 20}).tzOffsetHours, 14.0);
+    });
+
+    test('round-trips tzOffsetHours through toJson/fromJson', () {
+      final original = AppConfig.fromJson({'tzOffsetHours': 8});
+      final restored = AppConfig.fromJson(original.toJson());
+
+      expect(restored.tzOffsetHours, 8.0);
     });
 
     test('round-trips prayer-calc fields through toJson/fromJson', () {
@@ -276,27 +292,26 @@ void main() {
       expect(restored.elevationMeters, 92.0);
     });
 
-    test('horizonDip is 0 at sea level and grows with elevation', () {
-      expect(AppConfig.horizonDip(0), 0.0);
-      expect(AppConfig.horizonDip(-10), 0.0);
-
-      // acos(R / (R + h)) in degrees, R = 6 371 000 m.
-      expect(AppConfig.horizonDip(100), closeTo(0.321, 0.001));
-      expect(AppConfig.horizonDip(1000), closeTo(1.015, 0.001));
-      expect(
-        AppConfig.horizonDip(2000),
-        greaterThan(AppConfig.horizonDip(1000)),
-      );
+    test('default ihtiyat matches the Kemenag Jakarta calibration', () {
+      expect(AppConstants.ihtiyat, {
+        'subuh': 2,
+        'terbit': -2,
+        'dzuhur': 3,
+        'ashar': 2,
+        'maghrib': 2,
+        'isya': 2,
+      });
     });
 
-    test('default ihtiyat is +2 for every salat, -2 for Syuruq', () {
-      expect(AppConstants.ihtiyat['imsak'], 2);
-      expect(AppConstants.ihtiyat['subuh'], 2);
-      expect(AppConstants.ihtiyat['terbit'], -2);
-      expect(AppConstants.ihtiyat['dhuhur'], 2);
-      expect(AppConstants.ihtiyat['ashar'], 2);
-      expect(AppConstants.ihtiyat['maghrib'], 2);
-      expect(AppConstants.ihtiyat['isya'], 2);
+    test('legacy dhuhur ihtiyat key is migrated to dzuhur', () {
+      final config = AppConfig.fromJson({
+        'ihtiyat': {'dhuhur': 9, 'imsak': 4},
+      });
+
+      expect(config.ihtiyat['dzuhur'], 9);
+      expect(config.ihtiyat.containsKey('dhuhur'), isFalse);
+      expect(config.ihtiyat.containsKey('imsak'), isFalse);
+      expect(config.ihtiyat, hasLength(6));
     });
 
     test('financialSummary defaults to the offline sample', () {

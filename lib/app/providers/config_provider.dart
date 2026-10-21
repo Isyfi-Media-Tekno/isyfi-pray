@@ -104,6 +104,7 @@ class ConfigProvider extends ChangeNotifier {
   String get liveMakkahUrl => _config.liveMakkahUrl;
   double get latitude => _config.latitude;
   double get longitude => _config.longitude;
+  double get tzOffsetHours => _config.tzOffsetHours;
   double get fajrAngle => _config.fajrAngle;
   double get ishaAngle => _config.ishaAngle;
   bool get useElevation => _config.useElevation;

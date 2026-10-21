@@ -26,7 +26,6 @@ dependencies:
   provider: ^6.1.5+1
   logger: ^2.5.0
   connectivity_plus: ^7.0.0
-  adhan_dart: ^2.0.1
   shelf: ^1.4.2
   shelf_router: ^1.1.4
   shelf_static: ^1.1.3

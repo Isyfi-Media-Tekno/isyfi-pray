@@ -4,26 +4,28 @@ The app is **fully offline**: the prayer schedule is computed entirely on-device
 
 ## 1. Prayer schedules (computed locally — no network)
 
-Prayer times are **calculated on-device** with the `adhan_dart` package using the **Kemenag (Indonesian) method**, so this feature needs no internet connection and no bundled schedule data.
+Prayer times are **calculated on-device** with a pure-Dart Meeus implementation (`lib/domain/use_cases/prayer_times_meeus.dart`) calibrated to the **Kemenag/Bimas Islam (Indonesian) method**, so this feature needs no internet connection and no bundled schedule data.
 
-The method parameters **default to constants in `AppConstants`** (`lib/core/constants/app_constants.dart`) but are **runtime-editable**: each is an `AppConfig` field (`latitude`, `longitude`, `fajrAngle`, `ishaAngle`, `madhab`, `ihtiyat`) that can be overridden through the local config server (§6), including a city-preset dropdown in the web editor. Defaults:
+The method parameters **default to constants in `AppConstants`** (`lib/core/constants/app_constants.dart`) but are **runtime-editable**: each is an `AppConfig` field (`latitude`, `longitude`, `tzOffsetHours`, `fajrAngle`, `ishaAngle`, `madhab`, `ihtiyat`) that can be overridden through the local config server (§6), including a city-preset dropdown in the web editor. Defaults:
 
 | Constant | Value |
 | --- | --- |
-| `latitude` / `longitude` | Depok: `-6.40` / `106.82` (fine-tune to the masjid's exact position) |
+| `latitude` / `longitude` | Jakarta reference: `-6.17` / `106.835` (calibrated to Kemenag, not the city-centre marker) |
+| `tzOffsetHours` | `7` (WIB; 8 = WITA, 9 = WIT) |
 | `fajrAngle` | `20.0` |
 | `ishaAngle` | `18.0` |
-| `madhab` | `Madhab.shafi` |
-| `ihtiyat` | `{'imsak': 2, 'subuh': 2, 'terbit': -3, 'dhuhur': 3, 'ashar': 2, 'maghrib': 3, 'isya': 2}` |
+| `madhab` | `'shafi'` (Hanafi switches the Ashar shadow factor to 2) |
+| `ihtiyat` | `{'subuh': 2, 'terbit': -2, 'dzuhur': 3, 'ashar': 2, 'maghrib': 2, 'isya': 2}` |
 
 `CalculatePrayerTimes` (`lib/domain/use_cases/calculate_prayer_times.dart`) is the pure use case behind `PrayerRepository`:
 
-1. Build `CalculationMethodParameters.other()` and set `fajrAngle` / `ishaAngle` / `madhab` from the constants.
-2. Call `PrayerTimes(coordinates:, date: DateTime.utc(y, m, d), calculationParameters:, precision: true)`.
-3. Apply the Kemenag **ihtiyat** rule to each raw time: shift by the per-prayer minutes, then round leftover seconds **up** to the next minute (ceil) for the five salat times and **down** (floor, drop seconds) for terbit/Syuruq. (Imsak = fajr − 10 min, but the app's contract has no imsak slot, so it is not emitted.)
-4. Return the canonical map — `{ "Subuh", "Syuruq", "Dzuhur", "Ashar", "Maghrib", "Isya" }` with `HH:mm` values, where the package's `sunrise` becomes the app's **`Syuruq`** key.
+1. Map the `AppConfig` calc fields onto `PrayerTimesMeeus.compute(...)`: coordinates, `tzOffsetHours`, `effectiveFajrAngle` / `effectiveIshaAngle`, elevation, ihtiyat, and `asrShadowFactor` (2 for Hanafi, 1 otherwise).
+2. Compute the Sun's declination and equation of time with Meeus (ch. 7/25/28), **iterated at each event time** rather than once at noon.
+3. Use the Kemenag horizon convention: Fajr −20°, Isha −18°, sunrise/sunset −1° (already includes refraction, semi-diameter and a typical horizon dip). Elevation is opt-in and adds an extra dip.
+4. Apply the Kemenag **ihtiyat** rule to each raw time: shift by the per-prayer minutes, then round leftover seconds **up** to the next minute (ceil) for the five salat times and **down** (floor, drop seconds) for terbit/Syuruq. The app's contract has no imsak slot, so it is not emitted.
+5. Return the canonical map — `{ "Subuh", "Syuruq", "Dzuhur", "Ashar", "Maghrib", "Isya" }` with `HH:mm` values.
 
-Times are computed in UTC and read with `.toLocal()`, so they land on the device wall clock (WIB/WITA/WIT). The jadwal is recomputed at launch (`AppProvider.loadInitialData`), at every midnight (`_handleMidnightSync`), and whenever the calc params change at runtime: `AppProvider` compares a fingerprint (`_lastCalcKey`) of `latitude / longitude / fajrAngle / ishaAngle / madhab / ihtiyat` on each 1-second tick and recomputes the schedule only when it changes.
+The schedule is placed on the **configured** wall clock (`tzOffsetHours`: WIB 7 / WITA 8 / WIT 9), never on `DateTime.now().timeZoneOffset` or `.toLocal()` — a masjid TV's device zone may be wrong. The jadwal is recomputed at launch (`AppProvider.loadInitialData`), at every midnight (`_handleMidnightSync`), and whenever the calc params change at runtime: `AppProvider` compares a fingerprint (`_lastCalcKey`) of `latitude / longitude / tzOffsetHours / fajrAngle / ishaAngle / madhab / ihtiyat` on each 1-second tick and recomputes the schedule only when it changes.
 
 ## 2. Config — fixed local constants (no remote fetch)
 
@@ -34,7 +36,7 @@ homeDuration, eventDuration, reportDuration, adzanDuration, jumatDuration,
 shalatDuration, isyraqDuration, hijriCorrection (clamped to [-2, 2]),
 waitingIsyraqDuration, iqomahSubuhDuration, iqomahMaghribRamadhanDuration,
 iqomahDefaultDuration, minutesBeforeMaghrib, minutesBeforeJumat,
-latitude, longitude, fajrAngle, ishaAngle, madhab, ihtiyat,
+latitude, longitude, tzOffsetHours, fajrAngle, ishaAngle, madhab, ihtiyat,
 marqueeText, backgroundImage, eventImages, enableFinancialReport, financialSummary
 ```
 

@@ -224,7 +224,7 @@ void main() {
       expect(json['longitude'], AppConstants.longitude);
       expect(json['fajrAngle'], AppConstants.fajrAngle);
       expect(json['ishaAngle'], AppConstants.ishaAngle);
-      expect(json['madhab'], AppConstants.madhab.name);
+      expect(json['madhab'], AppConstants.madhab);
       expect(json['ihtiyat'], isA<Map>());
       expect(json.containsKey('eventImage'), isFalse);
     });

@@ -1762,6 +1762,15 @@
                   <div class="input-wrap"><input class="input" id="in-elevationMeters" type="number" step="any"
                       min="0"><span class="ic" data-i="terrain"></span></div>
                 </div>
+                <div class="field">
+                  <label for="in-tzOffsetHours">Zona Waktu <span class="unit">(offset dari UTC)</span></label>
+                  <select class="input" id="in-tzOffsetHours">
+                    <option value="7">WIB (UTC+7)</option>
+                    <option value="8">WITA (UTC+8)</option>
+                    <option value="9">WIT (UTC+9)</option>
+                  </select>
+                  <p class="hint">Jadwal memakai zona ini, bukan zona waktu perangkat TV.</p>
+                </div>
                 <div class="lbl-row">
                   <div class="lbl-txt">
                     <h4>Gunakan elevasi</h4>
@@ -1814,11 +1823,6 @@
                 style="font-weight:500;font-size:16px;color:var(--on-surface-variant)">(menit tambahan)</span></h3>
             <div class="grid-ih">
               <div class="field">
-                <label for="in-ihtiyat.imsak">Imsak</label>
-                <div class="input-wrap"><input class="input" id="in-ihtiyat.imsak" type="number" min="0"><span
-                    class="ic" data-i="alarm"></span></div>
-              </div>
-              <div class="field">
                 <label for="in-ihtiyat.subuh">Subuh</label>
                 <div class="input-wrap"><input class="input" id="in-ihtiyat.subuh" type="number" min="0"><span
                     class="ic" data-i="alarm"></span></div>
@@ -1829,8 +1833,8 @@
                     data-i="light_mode"></span></div>
               </div>
               <div class="field">
-                <label for="in-ihtiyat.dhuhur">Dhuhur</label>
-                <div class="input-wrap"><input class="input" id="in-ihtiyat.dhuhur" type="number" min="0"><span
+                <label for="in-ihtiyat.dzuhur">Dzuhur</label>
+                <div class="input-wrap"><input class="input" id="in-ihtiyat.dzuhur" type="number" min="0"><span
                     class="ic" data-i="schedule"></span></div>
               </div>
               <div class="field">
@@ -2391,10 +2395,9 @@
     }
 
     const IHTIYAT_FIELDS = [
-      { key: 'imsak', label: 'Imsak' },
       { key: 'subuh', label: 'Subuh' },
       { key: 'terbit', label: 'Terbit (Syuruq)', allowNegative: true },
-      { key: 'dhuhur', label: 'Dhuhur' },
+      { key: 'dzuhur', label: 'Dzuhur' },
       { key: 'ashar', label: 'Ashar' },
       { key: 'maghrib', label: 'Maghrib' },
       { key: 'isya', label: 'Isya' },
@@ -2738,6 +2741,8 @@
 
       document.getElementById('in-latitude').value = cfg.latitude;
       document.getElementById('in-longitude').value = cfg.longitude;
+      document.getElementById('in-tzOffsetHours').value =
+        cfg.tzOffsetHours !== undefined && cfg.tzOffsetHours !== null ? cfg.tzOffsetHours : 7;
       document.getElementById('in-elevationMeters').value = cfg.elevationMeters || 0;
       document.getElementById('in-useElevation').checked = !!cfg.useElevation;
       document.getElementById('in-fajrAngle').value = cfg.fajrAngle;
@@ -2966,6 +2971,7 @@
 
       p.latitude = parseFloat(document.getElementById('in-latitude').value);
       p.longitude = parseFloat(document.getElementById('in-longitude').value);
+      p.tzOffsetHours = parseFloat(document.getElementById('in-tzOffsetHours').value);
       p.useElevation = document.getElementById('in-useElevation').checked;
       p.elevationMeters =
         parseFloat(document.getElementById('in-elevationMeters').value) || 0;

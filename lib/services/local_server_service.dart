@@ -368,6 +368,11 @@ class LocalServerService {
     if (longitude != null && (longitude < -180.0 || longitude > 180.0)) {
       return 'longitude must be between -180 and 180';
     }
+    final double? tzOffsetHours = _parseDouble(json['tzOffsetHours']);
+    if (tzOffsetHours != null &&
+        (tzOffsetHours < -12.0 || tzOffsetHours > 14.0)) {
+      return 'tzOffsetHours must be between -12 and 14';
+    }
     final double? fajrAngle = _parseDouble(json['fajrAngle']);
     if (fajrAngle != null && (fajrAngle <= 0.0 || fajrAngle > 40.0)) {
       return 'fajrAngle must be in (0, 40]';

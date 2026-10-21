@@ -63,7 +63,7 @@ If the server fails to bind (port 8080 taken), it logs and the app continues —
 - Screens are stateless and receive all data through constructors — keep it that way; no logic inside `ui/`. State lives in `app/providers/`, data access behind `data/repositories/`, and pure rules in `domain/use_cases/`.
 - All durations/text/images flow through `ConfigProvider`, which starts from the `AppConstants` defaults (no remote config) and merges persisted overrides saved through the local config server. Add new tunables in `AppConstants`, not as ad-hoc local constants — and if it should be editable from the web UI, add the field to `AppConfig` + `assets/web/index.html` too.
 - The Jumat rename ("Dzuhur" → "Jumat" on Friday) exists in **five** sites — see `docs/ARCHITECTURE.md` → "Where the Jumat translation lives". Touch all five or you reintroduce the recurring bug.
-- Prayer times are computed locally for **Depok** coordinates (`AppConstants.latitude` / `AppConstants.longitude`). The location (plus `fajrAngle`/`ishaAngle`/`madhab`/`ihtiyat`) is **editable at runtime** through the web editor's "Lokasi & Perhitungan Waktu" card (city preset dropdown fills lat/long), and the schedule recomputes within ~1s via `AppProvider._refreshJadwalIfNeeded`.
+- Prayer times are computed locally for the calibrated **Jakarta** reference (`AppConstants.latitude` / `AppConstants.longitude`) using the explicit `tzOffsetHours` (WIB 7 / WITA 8 / WIT 9), never the device clock zone. The location, time zone, angles, madhab and ihtiyat are **editable at runtime** through the web editor's "Lokasi & Metode" card (city preset dropdown fills lat/long), and the schedule recomputes within ~1s via `AppProvider._refreshJadwalIfNeeded`.
 
 ## Release process
 

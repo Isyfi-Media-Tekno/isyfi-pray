@@ -43,7 +43,8 @@ lib/
 │   │   └── financial_summary.dart    # total kas + weekly income (doubles, zero-fallback)
 │   └── use_cases/
 │       ├── calculate_countdown.dart      # next prayer + countdown from a jadwal map
-│       ├── calculate_prayer_times.dart   # on-device Kemenag prayer-time calc (adhan_dart), reads AppConfig for location/madhab/ihtiyat
+│       ├── calculate_prayer_times.dart   # maps AppConfig to the Meeus calculator; keeps the canonical jadwal contract
+│       ├── prayer_times_meeus.dart       # pure-Dart Kemenag/Bimas Islam astronomy (Meeus), explicit time zone + ihtiyat rounding
 │       └── get_iqomah_duration.dart      # iqomah length per prayer (Subuh / Ramadhan rules)
 └── ui/
     ├── home/                         # home status + its mode screens

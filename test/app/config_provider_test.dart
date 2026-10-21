@@ -54,7 +54,7 @@ void main() {
       expect(config.useElevation, AppConstants.useElevation);
       expect(config.elevationMeters, AppConstants.elevationMeters);
       expect(config.calculationMethod, AppConstants.calculationMethod);
-      expect(config.madhab, AppConstants.madhab.name);
+      expect(config.madhab, AppConstants.madhab);
       expect(config.ihtiyat, AppConstants.ihtiyat);
     });
 
@@ -214,7 +214,7 @@ void main() {
       expect(config.madhab, 'hanafi');
       expect(config.ihtiyat['subuh'], 5);
       expect(config.ihtiyat['maghrib'], AppConstants.ihtiyat['maghrib']);
-      expect(config.ihtiyat, hasLength(7));
+      expect(config.ihtiyat, hasLength(6));
     });
 
     test('applyConfig() hot-applies and notifies listeners', () {

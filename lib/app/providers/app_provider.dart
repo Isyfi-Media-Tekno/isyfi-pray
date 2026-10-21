@@ -215,7 +215,7 @@ class AppProvider extends ChangeNotifier {
     final List<MapEntry<String, int>> entries = cfg.ihtiyat.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
     final StringBuffer buffer = StringBuffer(
-      '${cfg.latitude},${cfg.longitude},'
+      '${cfg.latitude},${cfg.longitude},${cfg.tzOffsetHours},'
       '${cfg.effectiveFajrAngle},${cfg.effectiveIshaAngle},'
       '${cfg.useElevation},${cfg.elevationMeters},'
       '${cfg.calculationMethod},${cfg.madhab}',
